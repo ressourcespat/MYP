@@ -70,16 +70,22 @@
         </div>
     </div>
 
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://apis.google.com/js/api.js" async defer onload="gapiLoaded()"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer onload="gisLoaded()"></script>
     <script>
-        // NOTE: These are your API Key and Client ID from Google Cloud Console.
-        // They have been updated based on the information you provided.
+        // NOTE IMPORTANTE:
+        // Pour que l'application fonctionne, vous devez remplacer les valeurs
+        // des variables 'API_KEY' et 'CLIENT_ID' ci-dessous par celles
+        // de votre projet dans la console Google Cloud.
+        // Assurez-vous également que l'URI de redirection est
+        // exactement la même que l'URL de votre site GitHub Pages.
         const API_KEY = 'AIzaSyDkp6okMRGpspNiKtjZGurpPJsjSqX50Fs';
         const CLIENT_ID = '588264526022-50fo7vbji9qqb91kpna0pd3mhi3incq4.apps.googleusercontent.com';
 
         const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
         
+        let gapiInited = false;
+        let gisInited = false;
         let pickerApiLoaded = false;
         let tokenClient;
 
@@ -91,10 +97,25 @@
         const mainMessageEl = document.getElementById('main-message');
 
         /**
-         * On load, called to load the auth2 library and API client library.
+         * Callback function when gapi.js is loaded
          */
-        function handleClientLoad() {
-            gapi.load('client:picker', initGapiClient);
+        function gapiLoaded() {
+            gapi.load('client:picker', () => {
+                gapiInited = true;
+                if (gapiInited && gisInited) {
+                    initGapiClient();
+                }
+            });
+        }
+        
+        /**
+         * Callback function when gis.js is loaded
+         */
+        function gisLoaded() {
+            gisInited = true;
+            if (gapiInited && gisInited) {
+                initGapiClient();
+            }
         }
         
         /**
@@ -335,9 +356,6 @@
                 icon.classList.remove('expanded');
             }
         }
-
-        // Initial load of Google APIs
-        handleClientLoad();
     </script>
 </body>
 </html>
